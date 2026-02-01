@@ -256,6 +256,52 @@ void* cow_fork_child(void *parent_ptr, size_t size) {
 }
 """
 
+    TCP_SERVER = """
+/* TCP Server Pattern (Section 6.2) */
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+int start_tcp_server(int port) {
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in address;
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(port);
+    bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+    listen(server_fd, 3);
+    return server_fd;
+}
+"""
+
+    SHARED_MEMORY = """
+/* POSIX Shared Memory Pattern (Section 6.2) */
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+void* create_shared_memory(const char *name, size_t size) {
+    int shm_fd = shm_open(name, O_CREAT | O_RDWR, 0666);
+    ftruncate(shm_fd, size);
+    return mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+}
+"""
+
+    RAII_CLEANUP = """
+/* RAII-style Cleanup Pattern (Section 7.2) */
+#define RAII_VARIABLE(type, name, setup, cleanup) \\
+    type name __attribute__((cleanup(cleanup))) = setup
+
+void close_file(int *fd) {
+    if (*fd >= 0) {
+        printf("RAII: Closing file descriptor %d\\n", *fd);
+        close(*fd);
+    }
+}
+"""
+
     THREAD_POOL = """
 /* POSIX Thread Pool Template */
 #include <pthread.h>

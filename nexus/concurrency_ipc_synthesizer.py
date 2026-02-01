@@ -27,6 +27,16 @@ class ConcurrencyIPCSynthesizer:
         if "ipc" in all_text or "pipe" in all_text:
             model["ipc"] = "Named Pipes (FIFO)"
 
+        # Section 6.2: Socket Programming
+        if "socket" in all_text or "network" in all_text or "tcp" in all_text:
+            model["ipc"] = "TCP Sockets"
+            model["templates"]["TCP_SERVER"] = self.templates.get_template("TCP_SERVER")
+
+        # Section 6.2: Shared Memory
+        if "shared memory" in all_text or "shm" in all_text or "mmap" in all_text:
+            model["ipc"] = "POSIX Shared Memory"
+            model["templates"]["SHARED_MEMORY"] = self.templates.get_template("SHARED_MEMORY")
+
         return model
 
     def process(self, analysis_results):
