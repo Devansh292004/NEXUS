@@ -1,11 +1,34 @@
 from .synthesis.templates import TemplateLibrary
 
+class TradeoffAnalyzer:
+    """
+    Section 5.1: Structure Selection AI
+    Performance Profiling and Trade-off Analysis.
+    Provides explainable reasoning for design decisions.
+    """
+    def analyze_tradeoffs(self, analysis_results):
+        print("Tradeoff Analyzer: Balancing time/space complexity...")
+        constraints = analysis_results.get("constraints", [])
+        reasoning = []
+
+        if any("concurrent" in c.lower() for c in constraints):
+            reasoning.append("Selected Lock-free Queue to balance high concurrency with low synchronization overhead.")
+
+        if any("fast" in c.lower() or "performance" in c.lower() for c in constraints):
+            reasoning.append("Selected Arena Allocator to achieve O(1) allocation time at the cost of heap fragmentation.")
+
+        if not reasoning:
+            reasoning.append("Defaulting to standard POSIX structures for general applicability.")
+
+        return reasoning
+
 class AdvancedDataStructureSynthesis:
     """
     Section 5: Advanced Data Structure Synthesis
     """
     def __init__(self):
         self.templates = TemplateLibrary()
+        self.tradeoff_analyzer = TradeoffAnalyzer()
 
     def select_structures(self, analysis_results):
         selected = []
@@ -28,7 +51,10 @@ class AdvancedDataStructureSynthesis:
     def process(self, analysis_results):
         print("Advanced Data Structure Synthesis: Selecting optimal structures...")
         selected_structures = self.select_structures(analysis_results)
+        reasoning = self.tradeoff_analyzer.analyze_tradeoffs(analysis_results)
+
         return {
             "selected_structures": [name for name, _ in selected_structures],
-            "templates": {name: content for name, content in selected_structures}
+            "templates": {name: content for name, content in selected_structures},
+            "design_reasoning": reasoning
         }

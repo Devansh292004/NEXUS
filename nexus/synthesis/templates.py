@@ -193,6 +193,69 @@ static inline void list_add(struct list_head *new, struct list_head *head) {
 }
 """
 
+    WORK_STEALING_SCHEDULER = """
+/* Work-stealing Scheduler Pattern (Section 6.1) */
+#include <pthread.h>
+#include <stdbool.h>
+
+typedef struct ws_deque {
+    void **buffer;
+    size_t size;
+    volatile long top, bottom;
+} ws_deque_t;
+
+void ws_push(ws_deque_t *q, void *data) {
+    long b = q->bottom;
+    q->buffer[b % q->size] = data;
+    q->bottom = b + 1;
+}
+
+void* ws_pop(ws_deque_t *q) {
+    long b = q->bottom - 1;
+    q->bottom = b;
+    long t = q->top;
+    if (t <= b) {
+        void *data = q->buffer[b % q->size];
+        if (t == b) {
+            if (!__sync_bool_compare_and_swap(&q->top, t, t + 1)) data = NULL;
+            q->bottom = t + 1;
+        }
+        return data;
+    }
+    q->bottom = t;
+    return NULL;
+}
+
+void* ws_steal(ws_deque_t *q) {
+    long t = q->top;
+    long b = q->bottom;
+    if (t < b) {
+        void *data = q->buffer[t % q->size];
+        if (!__sync_bool_compare_and_swap(&q->top, t, t + 1)) return NULL;
+        return data;
+    }
+    return NULL;
+}
+"""
+
+    COPY_ON_WRITE = """
+/* Copy-on-Write (COW) Memory Pattern (Section 5.2) */
+#include <sys/mman.h>
+#include <unistd.h>
+#include <string.h>
+
+void* cow_init(size_t size) {
+    return mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+}
+
+void* cow_fork_child(void *parent_ptr, size_t size) {
+    /* In a real OS fork() handles COW, this is a simulated pattern */
+    void *child_ptr = mmap(NULL, size, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    /* In COW, child points to same physical pages as parent until write */
+    return parent_ptr;
+}
+"""
+
     THREAD_POOL = """
 /* POSIX Thread Pool Template */
 #include <pthread.h>

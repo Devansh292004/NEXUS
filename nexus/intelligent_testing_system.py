@@ -24,6 +24,26 @@ int main() {
 """
         return driver_code
 
+class FuzzTargetGenerator:
+    """
+    Section 4.1: Fuzzing
+    Generates fuzz targets for libFuzzer/AFL++.
+    """
+    def generate_fuzz_target(self, code_info):
+        print("Fuzz Target Generator: Creating libFuzzer target...")
+        fuzz_code = """
+#include <stdint.h>
+#include <stddef.h>
+/* Include generated header or code here */
+
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+    if (Size < 1) return 0;
+    /* Call the synthesized function with fuzzed Data */
+    return 0;
+}
+"""
+        return fuzz_code
+
 class MetamorphicTester:
     """
     Section 4.1: Metamorphic Testing
@@ -55,6 +75,7 @@ class IntelligentTestingSystem:
         self.property_tester = PropertyBasedTester()
         self.coverage_tester = CoverageDrivenTester()
         self.driver_generator = TestDriverGenerator()
+        self.fuzz_generator = FuzzTargetGenerator()
         self.metamorphic_tester = MetamorphicTester()
 
     def process(self, code_info):
@@ -64,5 +85,6 @@ class IntelligentTestingSystem:
             "property_tests": self.property_tester.generate_tests(code),
             "coverage_results": self.coverage_tester.run_tests(code),
             "test_driver": self.driver_generator.generate_driver(code_info),
+            "fuzz_target": self.fuzz_generator.generate_fuzz_target(code_info),
             "metamorphic_results": self.metamorphic_tester.check_properties(None, None)
         }
