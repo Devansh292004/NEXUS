@@ -156,6 +156,43 @@ RefCounted* ref_init(size_t size, void (*destroy)(RefCounted *)) {
 }
 """
 
+    CONSERVATIVE_GC = """
+/* Conservative Garbage Collector Stub (Boehm GC integration pattern) */
+#include <gc.h>
+#include <stdlib.h>
+
+void* gc_alloc(size_t size) {
+    return GC_MALLOC(size);
+}
+
+void gc_init() {
+    GC_INIT();
+}
+"""
+
+    INTRUSIVE_LIST = """
+/* Intrusive Linked List Implementation */
+#include <stddef.h>
+
+typedef struct list_head {
+    struct list_head *next, *prev;
+} list_head;
+
+#define container_of(ptr, type, member) ({                      \\
+        const typeof( ((type *)0)->member ) *__mptr = (ptr);    \\
+        (type *)( (char *)__mptr - offsetof(type,member) );})
+
+#define list_entry(ptr, type, member) \\
+    container_of(ptr, type, member)
+
+static inline void list_add(struct list_head *new, struct list_head *head) {
+    new->next = head->next;
+    new->prev = head;
+    head->next->prev = new;
+    head->next = new;
+}
+"""
+
     THREAD_POOL = """
 /* POSIX Thread Pool Template */
 #include <pthread.h>

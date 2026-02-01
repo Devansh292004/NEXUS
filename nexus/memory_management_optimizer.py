@@ -22,6 +22,12 @@ class MemoryManagementOptimizer:
             strategy["allocation"] = "Arena Allocator"
             strategy["optimizations"].append("O(1) allocation/deallocation")
 
+        # Section 7.1: Conservative GC for complex ownership
+        if "complex ownership" in all_text or "graph" in all_text or "garbage collect" in all_text:
+            strategy["allocation"] = "Conservative GC"
+            strategy["optimizations"].append("Automatic reachability analysis")
+            strategy["leak_prevention"] = "Boehm GC-style cleanup"
+
         return strategy
 
     def process(self, analysis_results):
