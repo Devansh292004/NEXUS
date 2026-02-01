@@ -26,7 +26,7 @@ class NexusOrchestrator:
         self.compliance_checker = ComplianceChecker()
         self.output_guarantees = OutputGuarantees()
 
-    def run_pipeline(self, specification):
+    def run_pipeline(self, specification, max_iterations=3):
         print("Starting NEXUS Pipeline...")
 
         # 1. Multi-Stage Analysis
@@ -45,23 +45,42 @@ class NexusOrchestrator:
         # 3. Formal Verification (Plan)
         verification_plan = self.verification_core.process(analysis_results)
 
-        # 4. Code Synthesis (Using all plans)
-        initial_code_info = self.synthesis_framework.process(
-            analysis_results, verification_plan, plans
-        )
+        iteration = 0
+        code_info = None
 
-        # 5. Intelligent Testing
-        test_results = self.testing_system.process(initial_code_info)
+        while iteration < max_iterations:
+            iteration += 1
+            print(f"\n--- Synthesis Iteration {iteration} ---")
 
-        # 6. Compilation & Build System
-        build_artifacts = self.build_system.process(initial_code_info)
+            # 4. Code Synthesis (Using all plans and previous failures if any)
+            code_info = self.synthesis_framework.process(
+                analysis_results, verification_plan, plans
+            )
 
-        # 7. Compliance Checking
-        compliance_results = self.compliance_checker.process(initial_code_info)
+            # 5. Intelligent Testing
+            test_results = self.testing_system.process(code_info)
+
+            # 6. Compilation & Build System
+            build_artifacts = self.build_system.process(code_info)
+
+            # 7. Compliance Checking
+            compliance_results = self.compliance_checker.process(code_info)
+
+            # Section 3.3: Refinement Loop
+            if compliance_results.get("status") == "PASSED" and test_results.get("coverage_results", {}).get("memory_leaks") == "None":
+                print("All checks passed. Synthesis successful.")
+                break
+            else:
+                print(f"Checks failed in iteration {iteration}. Refinement needed.")
+                # Feed failures back into next synthesis (simulated)
+                analysis_results["failures"] = {
+                    "compliance": compliance_results.get("violations"),
+                    "testing": test_results
+                }
 
         # 8. Output Guarantees
         final_package = self.output_guarantees.process(
-            initial_code_info, build_artifacts, compliance_results
+            code_info, build_artifacts, compliance_results
         )
 
         print("NEXUS Pipeline Completed Successfully.")

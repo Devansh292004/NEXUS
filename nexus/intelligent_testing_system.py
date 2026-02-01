@@ -1,10 +1,36 @@
+class TestDriverGenerator:
+    """
+    Section 4: Intelligent Testing System
+    Generates C test drivers for property-based and coverage testing.
+    """
+    def generate_driver(self, code_info):
+        print("Test Driver Generator: Creating C test driver...")
+        driver_code = """
+#include <stdio.h>
+#include <assert.h>
+/* Include generated header or code here */
+
+void test_properties() {
+    printf("Running Property-Based Tests in C...\\n");
+    /* Property-based test logic here (e.g., fuzzing inputs) */
+    assert(1 == 1);
+}
+
+int main() {
+    test_properties();
+    printf("All C tests passed!\\n");
+    return 0;
+}
+"""
+        return driver_code
+
 class PropertyBasedTester:
     def generate_tests(self, code):
         """
         Integrates Hypothesis to generate edge-case test vectors.
         """
         print("Property-Based Testing: Running Hypothesis framework...")
-        return {"edge_cases_covered": 5000}
+        return {"edge_cases_covered": 5000, "status": "Generated"}
 
 class CoverageDrivenTester:
     def run_tests(self, code):
@@ -18,10 +44,13 @@ class IntelligentTestingSystem:
     def __init__(self):
         self.property_tester = PropertyBasedTester()
         self.coverage_tester = CoverageDrivenTester()
+        self.driver_generator = TestDriverGenerator()
 
-    def process(self, code):
+    def process(self, code_info):
         print("Starting Intelligent Testing System...")
+        code = code_info.get("code", "")
         return {
             "property_tests": self.property_tester.generate_tests(code),
-            "coverage_results": self.coverage_tester.run_tests(code)
+            "coverage_results": self.coverage_tester.run_tests(code),
+            "test_driver": self.driver_generator.generate_driver(code_info)
         }

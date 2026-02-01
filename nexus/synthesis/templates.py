@@ -72,6 +72,90 @@ void arena_destroy(Arena *arena) {
 }
 """
 
+    OBJECT_POOL = """
+/* Object Pool Implementation */
+#include <stdlib.h>
+#include <stdbool.h>
+
+typedef struct ObjectPool {
+    void **pool;
+    bool *used;
+    size_t object_size;
+    size_t pool_size;
+} ObjectPool;
+
+ObjectPool* pool_init(size_t object_size, size_t pool_size) {
+    ObjectPool *op = malloc(sizeof(ObjectPool));
+    op->pool = malloc(pool_size * sizeof(void*));
+    op->used = calloc(pool_size, sizeof(bool));
+    op->object_size = object_size;
+    op->pool_size = pool_size;
+    for(size_t i = 0; i < pool_size; i++) {
+        op->pool[i] = malloc(object_size);
+    }
+    return op;
+}
+
+void* pool_alloc(ObjectPool *op) {
+    for(size_t i = 0; i < op->pool_size; i++) {
+        if(!op->used[i]) {
+            op->used[i] = true;
+            return op->pool[i];
+        }
+    }
+    return NULL;
+}
+
+void pool_free(ObjectPool *op, void *ptr) {
+    for(size_t i = 0; i < op->pool_size; i++) {
+        if(op->pool[i] == ptr) {
+            op->used[i] = false;
+            return;
+        }
+    }
+}
+
+void pool_destroy(ObjectPool *op) {
+    for(size_t i = 0; i < op->pool_size; i++) {
+        free(op->pool[i]);
+    }
+    free(op->pool);
+    free(op->used);
+    free(op);
+}
+"""
+
+    REFERENCE_COUNTING = """
+/* Simple Reference Counting Pattern */
+#include <stdlib.h>
+
+typedef struct RefCounted {
+    int count;
+    void (*destroy)(struct RefCounted *);
+} RefCounted;
+
+void ref_retain(RefCounted *obj) {
+    if (obj) obj->count++;
+}
+
+void ref_release(RefCounted *obj) {
+    if (obj) {
+        obj->count--;
+        if (obj->count <= 0) {
+            if (obj->destroy) obj->destroy(obj);
+            free(obj);
+        }
+    }
+}
+
+RefCounted* ref_init(size_t size, void (*destroy)(RefCounted *)) {
+    RefCounted *obj = malloc(size);
+    obj->count = 1;
+    obj->destroy = destroy;
+    return obj;
+}
+"""
+
     THREAD_POOL = """
 /* POSIX Thread Pool Template */
 #include <pthread.h>
