@@ -32,39 +32,36 @@ class NexusOrchestrator:
         # 1. Multi-Stage Analysis
         analysis_results = self.analysis_engine.process(specification)
 
-        # 2. Formal Verification
+        # 2. Domain Planning (Before Synthesis)
+        print("Starting Domain Planning stages...")
+        plans = {
+            "structures": self.data_structure_synthesis.process(analysis_results),
+            "concurrency": self.concurrency_synthesizer.process(analysis_results),
+            "memory": self.memory_optimizer.process(analysis_results),
+            "network": self.network_engine.process(analysis_results),
+            "algorithms": self.algorithm_library.process(analysis_results)
+        }
+
+        # 3. Formal Verification (Plan)
         verification_plan = self.verification_core.process(analysis_results)
 
-        # 3. Code Synthesis
-        initial_code = self.synthesis_framework.process(analysis_results, verification_plan)
+        # 4. Code Synthesis (Using all plans)
+        initial_code_info = self.synthesis_framework.process(
+            analysis_results, verification_plan, plans
+        )
 
-        # 4. Intelligent Testing
-        test_results = self.testing_system.process(initial_code)
+        # 5. Intelligent Testing
+        test_results = self.testing_system.process(initial_code_info)
 
-        # 5. Advanced Data Structure Synthesis
-        optimized_structures = self.data_structure_synthesis.process(analysis_results)
+        # 6. Compilation & Build System
+        build_artifacts = self.build_system.process(initial_code_info)
 
-        # 6. Concurrency & IPC Synthesis
-        concurrency_logic = self.concurrency_synthesizer.process(analysis_results)
+        # 7. Compliance Checking
+        compliance_results = self.compliance_checker.process(initial_code_info)
 
-        # 7. Memory Management Optimization
-        memory_plan = self.memory_optimizer.process(analysis_results)
-
-        # 8. Network Protocol Engine
-        network_logic = self.network_engine.process(analysis_results)
-
-        # 9. Algorithm Library Integration
-        algorithms = self.algorithm_library.process(analysis_results)
-
-        # 10. Compilation & Build System
-        build_artifacts = self.build_system.process(initial_code)
-
-        # 11. Compliance Checking
-        compliance_results = self.compliance_checker.process(initial_code)
-
-        # 12. Output Guarantees
+        # 8. Output Guarantees
         final_package = self.output_guarantees.process(
-            initial_code, build_artifacts, compliance_results
+            initial_code_info, build_artifacts, compliance_results
         )
 
         print("NEXUS Pipeline Completed Successfully.")

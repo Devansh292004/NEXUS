@@ -2,16 +2,18 @@ class MakefileGenerator:
     def generate(self, target="app", sources="main.c"):
         print("Generating Makefile with mandatory flags...")
         flags = "-Wall -Wextra -Wvla -fPIC -fsanitize=address"
+        libs = "-lpthread -lcrypto"
         makefile = f"""
 CC=gcc
 CFLAGS={flags}
+LIBS={libs}
 TARGET={target}
 SOURCES={sources}
 
 all: $(TARGET)
 
 $(TARGET): $(SOURCES)
-\t$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET)
+\t$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET) $(LIBS)
 
 clean:
 \trm -f $(TARGET)

@@ -22,22 +22,24 @@ class SemanticAnalyzer:
         """
         print("Analyzing requirements semantics...")
         analysis = {
-            "REQ": [],
-            "ASM": [],
-            "DEP": [],
-            "CONSTRAINTS": []
+            "req": [],
+            "asm": [],
+            "dep": [],
+            "constraints": []
         }
         for req in requirements:
-            if "assume" in req.lower():
-                analysis["ASM"].append(req)
-            elif "depends on" in req.lower():
-                analysis["DEP"].append(req)
+            lower_req = req.lower()
+            if "assume" in lower_req:
+                analysis["asm"].append(req)
+            elif "depends on" in lower_req:
+                analysis["dep"].append(req)
             else:
-                analysis["REQ"].append(req)
+                analysis["req"].append(req)
 
             # Constraint extraction
-            if any(word in req.lower() for word in ["memory", "performance", "limit", "restriction"]):
-                analysis["CONSTRAINTS"].append(req)
+            constraint_keywords = ["memory", "performance", "limit", "restriction", "fast", "concurrent", "thread"]
+            if any(word in lower_req for word in constraint_keywords):
+                analysis["constraints"].append(req)
         return analysis
 
 class MultiStageAnalysisEngine:
