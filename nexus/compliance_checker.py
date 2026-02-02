@@ -1,11 +1,37 @@
 import re
 import os
 
+class CodeStyleEnforcer:
+    """
+    Section 11.1: Code Style
+    Enforces style guide (formatting, naming conventions, modularity).
+    """
+    def check_style(self, code):
+        print("Code Style Enforcer: Validating formatting and naming conventions...")
+        violations = []
+
+        # Check for CamelCase in functions (assuming snake_case is required for C)
+        if re.search(r'\b[A-Z][a-z]+[A-Z][a-z]+\s*\(', code):
+            violations.append("Naming convention violation: Functions should use snake_case")
+
+        # Check for TAB indentation (assuming spaces are required)
+        if "\t" in code:
+            violations.append("Formatting violation: Use spaces instead of TABS")
+
+        # Modularity check (simulated)
+        if len(code.split("\n")) > 500:
+            violations.append("Modularity violation: File too long, consider decomposing")
+
+        return violations
+
 class ComplianceChecker:
     """
     Section 11.1: Restriction Enforcement
     Static analysis and repository cleanliness validation.
     """
+    def __init__(self):
+        self.style_enforcer = CodeStyleEnforcer()
+
     def check_forbidden_functions(self, code):
         """
         Uses static analysis (regex/AST) to detect forbidden C functions.
@@ -47,8 +73,9 @@ class ComplianceChecker:
 
         function_violations = self.check_forbidden_functions(code)
         repo_violations = self.check_repository_cleanliness()
+        style_violations = self.style_enforcer.check_style(code)
 
-        all_violations = function_violations + repo_violations
+        all_violations = function_violations + repo_violations + style_violations
 
         if all_violations:
             return {"status": "FAILED", "violations": all_violations}
