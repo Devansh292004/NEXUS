@@ -28,11 +28,14 @@ class NexusOrchestrator:
 
     def run_pipeline(self, specification, max_iterations=3, base_path="."):
         print(f"Starting NEXUS Pipeline in {base_path}...")
+    def run_pipeline(self, specification, max_iterations=3):
+        print("Starting NEXUS Pipeline...")
 
         # 1. Multi-Stage Analysis
         analysis_results = self.analysis_engine.process(specification)
 
         # 2. Domain Planning (Before Synthesis)
+        print("Starting Domain Planning stages...")
         plans = {
             "structures": self.data_structure_synthesis.process(analysis_results),
             "concurrency": self.concurrency_synthesizer.process(analysis_results),
@@ -61,11 +64,27 @@ class NexusOrchestrator:
 
             compliance_results = self.compliance_checker.process(code_info)
 
+            # 4. Code Synthesis (Using all plans and previous failures if any)
+            code_info = self.synthesis_framework.process(
+                analysis_results, verification_plan, plans
+            )
+
+            # 5. Intelligent Testing
+            test_results = self.testing_system.process(code_info)
+
+            # 6. Compilation & Build System
+            build_artifacts = self.build_system.process(code_info)
+
+            # 7. Compliance Checking
+            compliance_results = self.compliance_checker.process(code_info)
+
+            # Section 3.3: Refinement Loop
             if compliance_results.get("status") == "PASSED" and test_results.get("coverage_results", {}).get("memory_leaks") == "None":
                 print("All checks passed. Synthesis successful.")
                 break
             else:
                 print(f"Checks failed in iteration {iteration}. Refinement needed.")
+                # Feed failures back into next synthesis (simulated)
                 analysis_results["failures"] = {
                     "compliance": compliance_results.get("violations"),
                     "testing": test_results

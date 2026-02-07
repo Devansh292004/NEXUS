@@ -30,6 +30,13 @@ class SpecificationParser:
                 # Read as text file
                 with open(specification, 'r') as f:
                     specification = f.read()
+        Supports text and placeholder for PDF intelligence.
+        """
+        print("Parsing specification using Neural Engine...")
+        # Placeholder for PDF OCR/Intelligence
+        if specification.endswith('.pdf'):
+            print("Extracting text from PDF...")
+            specification = "EXTRACTED_TEXT_FROM_PDF"
 
         requirements = re.findall(r'REQ: (.*?)(?=REQ:|$)', specification, re.DOTALL)
         return [req.strip() for req in requirements]

@@ -10,6 +10,19 @@ def main():
 
     args = parser.parse_args()
 
+    parser.add_argument("--roadmap", action="store_true", help="Display the Systems Programming Masterclass Roadmap")
+
+    args = parser.parse_args()
+
+    if args.roadmap:
+        from nexus.course_roadmap import ROADMAP_CONTENT
+        print("\n" + "="*50)
+        print("SYSTEMS PROGRAMMING MASTERCLASS ROADMAP")
+        print("="*50)
+        print(ROADMAP_CONTENT)
+        print("="*50)
+        sys.exit(0)
+
     specification = ""
     if args.file:
         try:

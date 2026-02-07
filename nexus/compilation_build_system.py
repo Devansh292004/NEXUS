@@ -59,3 +59,17 @@ class CompilationBuildSystem:
             print(f"Build System: Error writing files to {base_path}: {e}")
 
         return {"makefile": makefile, "status": f"Build artifacts generated in {base_path}", "variants": ["debug", "release", "test"]}
+    def process(self, code_info):
+        print("Starting Compilation & Build System stage...")
+        makefile = self.generator.generate()
+
+        # Write Makefile and code to disk for actual compilation capability
+        try:
+            with open("Makefile", "w") as f:
+                f.write(makefile)
+            with open("main.c", "w") as f:
+                f.write(code_info.get("code", ""))
+        except Exception as e:
+            print(f"Build System: Error writing files to disk: {e}")
+
+        return {"makefile": makefile, "status": "Build artifacts generated on disk", "variants": ["debug", "release", "test"]}
