@@ -8,6 +8,13 @@ NEXUS (Neural EXecution and Understanding System) is an autonomous AI-powered fr
 - **GCC** (for compiling generated C code)
 - **Make** (for build management)
 
+## Systems Programming Roadmap
+
+NEXUS now includes a comprehensive **Systems Programming Masterclass Roadmap** (12 Weeks) to help you master the fundamentals of systems programming while using the framework.
+
+- **View the Roadmap:** See [ROADMAP.md](ROADMAP.md) for the full curriculum.
+- **CLI Access:** Run `python3 main.py --roadmap` to display the roadmap directly in your terminal.
+
 ## Getting Started
 
 ### 1. Clone the Repository
