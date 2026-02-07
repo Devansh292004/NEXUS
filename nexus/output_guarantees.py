@@ -1,3 +1,13 @@
+from .course_roadmap import ROADMAP_CONTENT
+
+class CourseRoadmapGenerator:
+    """
+    Generates the Systems Programming Masterclass Roadmap.
+    """
+    def generate(self):
+        print("Course Roadmap Generator: Retrieving masterclass curriculum...")
+        return ROADMAP_CONTENT
+
 class READMEGenerator:
     """
     Section 11.1: Documentation
@@ -61,6 +71,7 @@ class OutputGuarantees:
     def __init__(self):
         self.readme_generator = READMEGenerator()
         self.proof_generator = FormalProofGenerator()
+        self.roadmap_generator = CourseRoadmapGenerator()
 
     def generate_mermaid_diagram(self, pipeline_stages):
         """
@@ -99,6 +110,7 @@ class OutputGuarantees:
 
         readme = self.readme_generator.generate_readme(code_info, cert, mermaid)
         proof = self.proof_generator.generate_proof(None)
+        roadmap = self.roadmap_generator.generate()
 
         return {
             "certification": cert,
@@ -107,7 +119,8 @@ class OutputGuarantees:
                 "architecture_diagram": mermaid,
                 "api_docs": api_docs,
                 "readme": readme,
-                "formal_proof": proof
+                "formal_proof": proof,
+                "course_roadmap": roadmap
             },
             "build_info": build_artifacts,
             "status": "Finalized"
