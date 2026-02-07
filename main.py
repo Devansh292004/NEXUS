@@ -7,6 +7,9 @@ def main():
     parser.add_argument("--spec", type=str, help="Textual specification of the assignment")
     parser.add_argument("--file", type=str, help="Path to a file containing the specification")
     parser.add_argument("--iterations", type=int, default=3, help="Maximum synthesis refinement iterations")
+
+    args = parser.parse_args()
+
     parser.add_argument("--roadmap", action="store_true", help="Display the Systems Programming Masterclass Roadmap")
 
     args = parser.parse_args()

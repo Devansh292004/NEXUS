@@ -1,9 +1,35 @@
 import re
+import os
+
+try:
+    import fitz  # PyMuPDF
+except ImportError:
+    fitz = None
 
 class SpecificationParser:
     def parse(self, specification):
         """
         Extracts requirements from assignment specifications.
+        Supports text and PDF intelligence.
+        """
+        print("Parsing specification using Neural Engine...")
+
+        # Section 1.1: PDF/Document Intelligence
+        if isinstance(specification, str) and (specification.endswith('.pdf') or os.path.exists(specification)):
+            if specification.endswith('.pdf') and fitz:
+                print(f"Extracting text from PDF: {specification}")
+                try:
+                    doc = fitz.open(specification)
+                    text = ""
+                    for page in doc:
+                        text += page.get_text()
+                    specification = text
+                except Exception as e:
+                    print(f"PDF Error: {e}")
+            elif os.path.exists(specification) and not specification.endswith('.pdf'):
+                # Read as text file
+                with open(specification, 'r') as f:
+                    specification = f.read()
         Supports text and placeholder for PDF intelligence.
         """
         print("Parsing specification using Neural Engine...")

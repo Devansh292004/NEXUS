@@ -26,6 +26,8 @@ class NexusOrchestrator:
         self.compliance_checker = ComplianceChecker()
         self.output_guarantees = OutputGuarantees()
 
+    def run_pipeline(self, specification, max_iterations=3, base_path="."):
+        print(f"Starting NEXUS Pipeline in {base_path}...")
     def run_pipeline(self, specification, max_iterations=3):
         print("Starting NEXUS Pipeline...")
 
@@ -51,6 +53,16 @@ class NexusOrchestrator:
         while iteration < max_iterations:
             iteration += 1
             print(f"\n--- Synthesis Iteration {iteration} ---")
+
+            code_info = self.synthesis_framework.process(
+                analysis_results, verification_plan, plans
+            )
+            test_results = self.testing_system.process(code_info)
+
+            # Pass base_path to build system
+            build_artifacts = self.build_system.process(code_info, base_path=base_path)
+
+            compliance_results = self.compliance_checker.process(code_info)
 
             # 4. Code Synthesis (Using all plans and previous failures if any)
             code_info = self.synthesis_framework.process(

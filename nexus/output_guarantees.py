@@ -119,6 +119,7 @@ class OutputGuarantees:
                 "architecture_diagram": mermaid,
                 "api_docs": api_docs,
                 "readme": readme,
+                "formal_proof": proof
                 "formal_proof": proof,
                 "course_roadmap": roadmap
             },

@@ -1,3 +1,5 @@
+import os
+
 class MakefileGenerator:
     """
     Section 10.1: Makefile Generator
@@ -42,6 +44,21 @@ class CompilationBuildSystem:
     def __init__(self):
         self.generator = MakefileGenerator()
 
+    def process(self, code_info, base_path="."):
+        print(f"Starting Compilation & Build System stage in {base_path}...")
+        makefile = self.generator.generate()
+
+        # Write Makefile and code to the unique session directory
+        try:
+            os.makedirs(base_path, exist_ok=True)
+            with open(os.path.join(base_path, "Makefile"), "w") as f:
+                f.write(makefile)
+            with open(os.path.join(base_path, "main.c"), "w") as f:
+                f.write(code_info.get("code", ""))
+        except Exception as e:
+            print(f"Build System: Error writing files to {base_path}: {e}")
+
+        return {"makefile": makefile, "status": f"Build artifacts generated in {base_path}", "variants": ["debug", "release", "test"]}
     def process(self, code_info):
         print("Starting Compilation & Build System stage...")
         makefile = self.generator.generate()
